@@ -3,13 +3,18 @@ from typing import List, Dict
 
 from src.tavily import search as tavily_search
 from src.utils import generate_queries
+from src.presenter import generate_presentation
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESEARCH_DIR = os.path.join(ROOT, "data", "research_results")
+PRESENTATIONS_DIR = os.path.join(ROOT, "data", "presentations")
+SUMMARIES_DIR = os.path.join(ROOT, "data", "category_summaries")
 
 
 def ensure_dirs():
     os.makedirs(RESEARCH_DIR, exist_ok=True)
+    os.makedirs(PRESENTATIONS_DIR, exist_ok=True)
+    os.makedirs(SUMMARIES_DIR, exist_ok=True)
 
 
 def create_todos() -> List[Dict]:
@@ -81,3 +86,29 @@ def run_research(start_date: str, end_date: str) -> Dict:
         written.append(os.path.relpath(fname, ROOT))
 
     return {"status": "completed", "files_written": written}
+
+
+def run_synthesis_and_presentation(start_date: str, end_date: str) -> Dict:
+    """
+    Phase 2: Synthesize research results into presentations.
+
+    Returns a summary dict with generated presentation files.
+    """
+    ensure_dirs()
+
+    # Generate markdown presentation
+    presentation_file = os.path.join(PRESENTATIONS_DIR, "presentation.md")
+    presentation = generate_presentation(
+        RESEARCH_DIR,
+        start_date=start_date,
+        end_date=end_date,
+        output_file=presentation_file,
+    )
+
+    written = [os.path.relpath(presentation_file, ROOT)]
+
+    return {
+        "status": "synthesis_completed",
+        "presentation_file": os.path.relpath(presentation_file, ROOT),
+        "files_written": written,
+    }

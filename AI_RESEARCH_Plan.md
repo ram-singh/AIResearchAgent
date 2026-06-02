@@ -442,7 +442,7 @@ Output: Attractive presentation with all AI releases & trends
 ## 🚀 Implementation Steps
 
 ### Phase 1: Core Research Agent (Weeks 1-2)
-1. Create `notebooks/5_ai_research_agent.ipynb`
+1. Create `notebooks/ai_research_agent.ipynb`
 2. Implement date parsing and query generation
 3. Create structured research workflow with TODOs
 4. Test Tavily searches across multiple AI domains
