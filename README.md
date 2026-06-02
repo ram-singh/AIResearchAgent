@@ -21,7 +21,7 @@ A sophisticated deep agent that **researches the latest AI releases** for a spec
 ### Core Features
 
 1. **Time-Period Research Planning**
-   - Accept user input directly in Jupyter notebook: specific month, quarter, year, or custom date range
+   - Accept user input directly in Jupyter notebook: specific date range
    - Parse input to create structured research queries
    - Plan research across multiple AI domains:
      - Model Releases
