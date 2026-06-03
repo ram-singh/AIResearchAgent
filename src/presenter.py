@@ -1,13 +1,20 @@
 """
 Markdown Presentation Generator
 Synthesizes research results into attractive markdown presentations.
+
+This module supports both:
+- Template-based presentation generation (generate_presentation)
+- Deep agent-powered synthesis (generate_presentation_with_agent)
 """
 
 import os
 import re
+import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple, Any
+
+from src.deep_research_agent import create_synthesis_agent, load_research_files as _load_research_files
 
 
 def load_research_files(research_dir: str) -> Dict[str, str]:
@@ -135,6 +142,9 @@ def generate_presentation(
     """
     Generate a comprehensive markdown presentation from research results.
 
+    Note: For intelligent, agent-powered presentation generation with deeper
+    analysis and insights, use generate_presentation_with_agent() instead.
+
     Args:
         research_dir: Path to directory containing research markdown files
         start_date: Research period start date
@@ -233,3 +243,135 @@ def generate_presentation(
             f.write(presentation)
 
     return presentation
+
+
+def generate_presentation_with_agent(
+    research_dir: str,
+    start_date: str,
+    end_date: str,
+    output_file: Optional[str] = None,
+    llm: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """
+    Generate a presentation using the Deep Synthesis Agent for intelligent analysis.
+
+    This function uses LangChain's agent framework to analyze research findings
+    and create a compelling presentation with expert insights, patterns identification,
+    and cross-category analysis.
+
+    Args:
+        research_dir: Path to directory containing research markdown files
+        start_date: Research period start date
+        end_date: Research period end date
+        output_file: Optional path to write presentation to
+        llm: Optional chat model override
+
+    Returns:
+        Dict with presentation content, output file path, and agent metadata
+    """
+    # Load research data
+    research = load_research_files(research_dir)
+
+    if not research:
+        return {
+            "status": "no_data",
+            "message": "No research files found",
+            "presentation": "# No research data available\n\nNo research files found.",
+        }
+
+    # Build research summary for the agent
+    research_summary = _build_research_summary(research, start_date, end_date)
+
+    # Create synthesis agent
+    agent = create_synthesis_agent(llm)
+
+    # Prepare the research task
+    synthesis_task = f"""Create a comprehensive, engaging presentation about AI developments from {start_date} to {end_date}.
+
+Research Data:
+{research_summary}
+
+Requirements:
+1. Executive Summary - Key highlights and most significant developments
+2. Detailed Analysis by Category - Models, Tools, Papers, Announcements, Events
+3. Cross-category Insights - Patterns, trends, and connections
+4. Significant Examples - Specific evidence for claims
+5. Forward-looking Implications - What this means for the AI landscape
+
+Make it compelling and insightful. Go beyond summarizing - analyze and interpret.
+The presentation should tell a story about the AI landscape during this period.
+
+Output the complete presentation in markdown format."""
+
+    try:
+        result = agent.invoke({"input": synthesis_task})
+        presentation = result.get("output", "")
+
+        # Write to file if specified
+        if output_file:
+            os.makedirs(os.path.dirname(output_file) or ".", exist_ok=True)
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(presentation)
+
+        return {
+            "status": "success",
+            "presentation": presentation,
+            "output_file": output_file,
+            "categories_analyzed": list(research.keys()),
+        }
+
+    except Exception as e:
+        # Fall back to template-based generation
+        fallback_presentation = generate_presentation(
+            research_dir, start_date, end_date, output_file
+        )
+        return {
+            "status": "fallback",
+            "message": f"Agent synthesis failed, using template: {str(e)}",
+            "presentation": fallback_presentation,
+            "output_file": output_file,
+        }
+
+
+def _build_research_summary(research: Dict[str, str], start_date: str, end_date: str) -> str:
+    """
+    Build a comprehensive summary of research data for agent consumption.
+
+    Formats research findings in a way that's optimal for LLM analysis.
+    """
+    summary_parts = [f"AI Research Summary: {start_date} to {end_date}", "=" * 50, ""]
+
+    for category, content in research.items():
+        summary_parts.append(f"\n## {category.upper().replace('_', ' ')}")
+
+        # Parse content for structured information
+        lines = content.split('\n')
+        items = []
+
+        for line in lines:
+            if line.startswith('- ['):
+                # Extract title and URL
+                title_match = re.search(r'\- \[(.*?)\]', line)
+                url_match = re.search(r'\]\((.*?)\)', line)
+
+                title = title_match.group(1) if title_match else "Untitled"
+                url = url_match.group(1) if url_match else ""
+
+                # Extract snippet
+                snippet_start = line.find('— ') + 2 if '— ' in line else line.find(') ') + 2
+                snippet = line[snippet_start:].strip() if snippet_start > 1 else ""
+
+                if url:
+                    items.append(f"- **{title}** ({url}): {snippet[:200]}")
+                else:
+                    items.append(f"- **{title}**: {snippet[:200]}")
+
+        if items:
+            summary_parts.extend(items[:10])  # Limit to 10 items per category
+        else:
+            # Include raw content if no structured items found
+            summary_parts.append(content[:500])
+
+        summary_parts.append("")  # Empty line between categories
+
+    return '\n'.join(summary_parts)

@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Optional, Any
 
 from src.tavily import search as tavily_search
 from src.utils import generate_queries
@@ -62,8 +62,48 @@ def run_tavily_search(
     return normalized
 
 
+def run_deep_research_agent(
+    start_date: str,
+    end_date: str,
+    focus_areas: Optional[List[str]] = None,
+    use_deep_agent: bool = True,
+) -> Dict[str, Any]:
+    """
+    Run research using the Deep Research Agent for comprehensive AI topic investigation.
+
+    This function uses LangChain's agent framework for iterative, multi-step reasoning
+    that can explore unexpected findings and cross-category patterns.
+
+    Args:
+        start_date: Start date (YYYY-MM-DD or natural language)
+        end_date: End date (YYYY-MM-DD or natural language)
+        focus_areas: Optional list of specific categories to focus on
+        use_deep_agent: If True, uses the deep agent (default: True)
+
+    Returns:
+        Dict with research status, output files, and agent output
+    """
+    from src.deep_research_agent import run_deep_research
+
+    ensure_dirs()
+
+    if use_deep_agent:
+        result = run_deep_research(
+            start_date=start_date,
+            end_date=end_date,
+            focus_areas=focus_areas,
+        )
+        return result
+    else:
+        # Fall back to simple research
+        return run_research(start_date, end_date)
+
+
 def run_research(start_date: str, end_date: str) -> Dict:
     """Run simple Phase 1 research: generate queries, run Tavily searches, write markdown files.
+
+    Note: For comprehensive deep research with iterative reasoning, use run_deep_research_agent()
+    with use_deep_agent=True instead.
 
     Returns a summary dict with written files.
     """
