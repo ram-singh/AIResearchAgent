@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Landscape Report: 2026-05-01 to 2026-05-31</title>
+  <style>
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+  --ink: #0f172a;
+  --muted: #64748b;
+  --paper: #ffffff;
+  --bg: #eef2ff;
+  --brand: #4f46e5;
+  --brand-dark: #312e81;
+  --cyan: #06b6d4;
+  --violet: #8b5cf6;
+  --rose: #f43f5e;
+  --amber: #f59e0b;
+  --emerald: #10b981;
+  --line: rgba(99, 102, 241, 0.14);
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+  --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --radius: 22px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.18), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.16), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+}
+
+.deck {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 56px;
+  display: grid;
+  gap: 32px;
+}
+
+/* ── Cover ── */
+.cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 4px);
+  padding: 64px 56px 52px;
+  color: #f8fafc;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(34, 211, 238, 0.35), transparent 28%),
+    radial-gradient(circle at 10% 90%, rgba(139, 92, 246, 0.38), transparent 32%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 42%, #312e81 100%);
+  box-shadow: var(--shadow);
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: auto -80px -80px auto;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cover-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.cover h1 {
+  position: relative;
+  z-index: 1;
+  margin: 24px 0 18px;
+  max-width: 920px;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+
+.cover-subtitle {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: rgba(248, 250, 252, 0.88);
+}
+
+.cover-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ── Slides ── */
+.slide {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.slide-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 28px;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.06));
+  border-bottom: 1px solid var(--line);
+}
+
+.slide-num {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--brand), var(--cyan));
+  color: white;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+.slide-head h2 {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+  line-height: 1.2;
+  color: var(--brand-dark);
+}
+
+.slide-body {
+  padding: 28px 30px 34px;
+}
+
+.slide-intro {
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  font-size: 1.06rem;
+  line-height: 1.75;
+  color: #334155;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.05), transparent);
+  border-left: 4px solid var(--brand);
+  border-radius: 0 12px 12px 0;
+}
+
+/* ── Stats strip ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 18px 14px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--brand), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Tags (in-slide badges) ── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.14), rgba(6, 182, 212, 0.1));
+  color: var(--brand-dark);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  white-space: nowrap;
+}
+
+/* ── Topic cards ── */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.topic-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
+.topic-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.07));
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.topic-card-head h3 {
+  margin: 0;
+  flex: 1;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: var(--brand-dark);
+}
+
+.topic-card-body {
+  padding: 16px 18px 18px;
+  font-size: 0.96rem;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.topic-card-body p { margin: 0 0 10px; }
+.topic-card-body p:last-child { margin-bottom: 0; }
+.topic-card-body ul, .topic-card-body ol { margin: 8px 0 0; padding-left: 1.2rem; }
+.topic-card-body li + li { margin-top: 0.35rem; }
+
+/* ── Highlight cards ── */
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+
+.highlight-card {
+  position: relative;
+  padding: 20px 18px 18px;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.highlight-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand), var(--cyan));
+}
+
+.highlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
+.highlight-card strong,
+.highlight-card h3 {
+  display: block;
+  margin: 0 0 10px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--brand-dark);
+}
+
+.highlight-card p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+/* ── Case study cards ── */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 18px 0;
+}
+
+.case-card {
+  padding: 22px 22px 20px;
+  border-radius: 18px;
+  border: 1px solid #e9d5ff;
+  border-left: 5px solid var(--violet);
+  background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+.case-card h3 {
+  margin: 0 0 14px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: #5b21b6;
+}
+
+.case-card p {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.case-card p:last-child { margin-bottom: 0; }
+
+.case-card ul, .case-card ol {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.case-card li + li { margin-top: 0.35rem; }
+
+/* ── Callout ── */
+.callout {
+  margin-top: 22px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.07));
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #1e293b;
+}
+
+.callout strong,
+.callout h3 {
+  display: block;
+  margin: 0 0 8px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  color: #047857;
+}
+
+.callout p {
+  margin: 0;
+}
+
+/* ── Roadmap ── */
+.roadmap {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.roadmap-item {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-sm);
+}
+
+.roadmap-num {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand), var(--violet));
+  color: white;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  align-self: start;
+}
+
+.roadmap-content {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.roadmap-item > h3,
+.roadmap-content h3 {
+  margin: 0 0 6px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--brand-dark);
+}
+
+.roadmap-item > p,
+.roadmap-content p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+/* Direct h3/p siblings (before postprocess) still align in column 2 */
+.roadmap-item > h3 {
+  grid-column: 2;
+}
+
+.roadmap-item > p {
+  grid-column: 2;
+}
+
+/* ── Tables ── */
+.data-table-wrap {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid #dbeafe;
+  margin: 18px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+thead {
+  background: linear-gradient(90deg, #312e81, #4f46e5);
+  color: white;
+}
+
+th {
+  padding: 14px 16px;
+  text-align: left;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.55;
+  color: #334155;
+}
+
+tbody tr:nth-child(even) { background: #f8fafc; }
+tbody tr + tr td { border-top: 1px solid #e2e8f0; }
+tbody tr:hover { background: rgba(79, 70, 229, 0.04); }
+
+/* ── Typography & links ── */
+.slide-body a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(79, 70, 229, 0.3);
+  transition: border-color 0.15s ease;
+}
+
+.slide-body a:hover {
+  border-bottom-color: var(--brand);
+}
+
+.slide-body ul, .slide-body ol {
+  margin: 12px 0;
+  padding-left: 1.3rem;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.slide-body li + li { margin-top: 0.4rem; }
+
+.prose p {
+  margin: 0 0 14px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.prose ul, .prose ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #334155;
+}
+
+.prose li + li { margin-top: 0.4rem; }
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+  padding-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .cover { padding: 36px 24px 30px; }
+  .slide-head, .slide-body { padding-left: 20px; padding-right: 20px; }
+  .topic-grid, .highlight-grid, .case-grid, .stat-grid { grid-template-columns: 1fr; }
+  .topic-card-head { flex-direction: column; align-items: flex-start; }
+}
+
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+
+  html { font-size: 10pt; }
+
+  body {
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .deck { gap: 0; padding: 0; }
+
+  .slide {
+    break-after: page;
+    page-break-after: always;
+    box-shadow: none !important;
+    border: 1px solid #dbeafe;
+    min-height: auto;
+  }
+
+  .slide:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .cover,
+  .topic-card,
+  .highlight-card,
+  .case-card,
+  .callout,
+  .stat-card,
+  .roadmap-item,
+  table,
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .screen-only { display: none !important; }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #64748b;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <section class="cover">
+  <div class="cover-kicker">AI Research Briefing</div>
+  <h1>The Trillion-Dollar Threshold</h1>
+  <div class="cover-subtitle">May 2026 marked AI's transition from experimental to enterprise-critical, with Anthropic's near-trillion valuation and Google's agentic revolution</div>
+  <div class="cover-meta">
+    <span class="chip">Generated June 06, 2026</span>
+    <span class="chip">2026-05-01 – 2026-05-31</span>
+    <span class="chip screen-only">Print-ready · Ctrl+P</span>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">01</div>
+    <h2>Executive Summary</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">May 2026 delivered unprecedented AI industry momentum, with Anthropic filing for a potential $1 trillion IPO while Google unveiled its "Agentic Gemini Era" at I/O. The month showcased mature AI systems transitioning from research curiosities to mission-critical enterprise tools.</p>
+    
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Major Categories</div></div>
+      <div class="stat-card"><div class="stat-value">$965B</div><div class="stat-label">Anthropic Pre-IPO Value</div></div>
+      <div class="stat-card"><div class="stat-value">4x</div><div class="stat-label">Claude Performance Gain</div></div>
+      <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Flagship Model Releases</div></div>
+    </div>
+
+    <div class="highlight-grid">
+      <article class="highlight-card"><strong>Agentic Revolution</strong><p>Google's I/O 2026 positioned AI agents as the next computing paradigm, with Gemini Spark leading personal AI deployment.</p></article>
+      <article class="highlight-card"><strong>Valuation Explosion</strong><p>Anthropic's $965B pre-IPO valuation signals AI's maturation into a trillion-dollar industry sector.</p></article>
+      <article class="highlight-card"><strong>Developer Simplification</strong><p>Hugging Face's Smolagents framework reduces agent deployment to just a few lines of code.</p></article>
+    </div>
+
+    <div class="callout"><strong>Key Takeaway:</strong> May 2026 marked AI's transition from experimental technology to enterprise-critical infrastructure, with trillion-dollar valuations validating the sector's fundamental importance.</div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">02</div>
+    <h2>Model Releases</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">Three flagship model releases dominated May 2026, each representing significant architectural advances. Anthropic's Claude Opus 4.8 introduced swarm coordination capabilities, while Google's Gemini 3.5 Flash brought agentic coding to mainstream developers.</p>
+    
+    <div class="case-grid">
+      <article class="case-card">
+        <h3>Anthropic Claude Opus 4.8</h3>
+        <p><strong>Date:</strong> May 28, 2026</p>
+        <p><strong>Highlight:</strong> Flagship upgrade featuring "Dynamic Workflows" for coordinating swarms of subagents, with 4x performance improvement in coding and knowledge work. Enhanced honesty and reliability focus positions it for enterprise deployment.</p>
+        <p><a href="#">Source: Anthropic Research</a></p>
+      </article>
+      
+      <article class="case-card">
+        <h3>Google Gemini 3.5 Flash</h3>
+        <p><strong>Date:</strong> May 2026 (Google I/O)</p>
+        <p><strong>Highlight:</strong> Breakthrough agentic coding abilities enable autonomous software development workflows. Part of Google's broader "Agentic Gemini Era" strategy targeting developer productivity transformation.</p>
+        <p><a href="#">Source: Google I/O 2026</a></p>
+      </article>
+      
+      <article class="case-card">
+        <h3>Gemini Spark & Omni</h3>
+        <p><strong>Date:</strong> May 2026 (Google I/O)</p>
+        <p><strong>Highlight:</strong> Gemini Spark delivers personal AI agent capabilities while Gemini Omni advances multimodal processing. Combined with Google Antigravity's dynamic layout generation, these models target consumer AI adoption.</p>
+        <p><a href="#">Source: Google I/O 2026</a></p>
+      </article>
+    </div>
+
+    <div class="callout"><strong>Strategic Insight:</strong> Model releases shifted from raw capability improvements to specialized agent coordination and workflow automation, signaling AI's evolution toward practical enterprise applications.</div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">03</div>
+    <h2>Tools & Frameworks</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">Developer tooling reached new levels of simplicity in May 2026, with Hugging Face's Smolagents framework democratizing AI agent deployment. The focus shifted from complex implementations to accessible, production-ready solutions.</p>
+    
+    <div class="topic-grid">
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Hugging Face Smolagents</h3><span class="tag">Framework</span></div>
+        <div class="topic-card-body">
+          <p><strong>Key Innovation:</strong> Lightweight AI agent framework requiring just ~1,000 lines of code for robust deployment.</p>
+          <ul>
+            <li>Minimalist design philosophy prioritizing developer experience</li>
+            <li>Seamless integration with Hugging Face ecosystem</li>
+            <li>Production-ready agent deployment in few lines of code</li>
+            <li>Focus on simplicity without sacrificing functionality</li>
+          </ul>
+        </div>
+      </article>
+      
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Google Antigravity</h3><span class="tag">Layout Engine</span></div>
+        <div class="topic-card-body">
+          <p><strong>Key Innovation:</strong> Dynamic layout generation system enabling AI-driven interface design.</p>
+          <ul>
+            <li>Automated UI/UX generation based on content context</li>
+            <li>Integration with Gemini multimodal capabilities</li>
+            <li>Real-time layout optimization for user engagement</li>
+            <li>Developer-friendly API for custom implementations</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <div class="callout"><strong>Developer Impact:</strong> Framework simplification in May 2026 reduced AI agent deployment complexity by orders of magnitude, accelerating enterprise adoption timelines.</div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">04</div>
+    <h2>Research & Papers</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">Academic research in May 2026 concentrated on scaling law limitations and architectural alternatives. The focus shifted toward distributed edge computing and breaking through current transformer scaling barriers.</p>
+    
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Research Area</th>
+            <th>Key Focus</th>
+            <th>Strategic Importance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Scaling Laws</td>
+            <td>Transformer limitations and alternatives</td>
+            <td>Critical for next-generation model architecture</td>
+          </tr>
+          <tr>
+            <td>Distributed Computing</td>
+            <td>Edge-based LLM training optimization</td>
+            <td>Enables decentralized AI deployment</td>
+          </tr>
+          <tr>
+            <td>Token Optimization</td>
+            <td>20:1 token-to-parameter ratio research</td>
+            <td>Efficiency gains for model deployment</td>
+          </tr>
+          <tr>
+            <td>Architecture Innovation</td>
+            <td>Post-transformer model designs</td>
+            <td>Foundation for 2027+ model generations</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-grid">
+      <article class="highlight-card"><strong>Scaling Barriers</strong><p>Research identified fundamental transformer limitations, driving exploration of novel architectures for future model generations.</p></article>
+      <article class="highlight-card"><strong>Edge Computing</strong><p>Distributed training approaches promise to democratize large model development beyond current tech giants.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">05</div>
+    <h2>Company Announcements</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">Anthropic's historic IPO filing dominated corporate news in May 2026, with a $965 billion pre-IPO valuation targeting $1 trillion public market capitalization. The announcement validated AI's transition to a trillion-dollar industry sector.</p>
+    
+    <div class="case-grid">
+      <article class="case-card">
+        <h3>Anthropic IPO Filing</h3>
+        <p><strong>Date:</strong> Late May 2026</p>
+        <p><strong>Valuation:</strong> $965 billion pre-IPO, targeting $1 trillion public valuation</p>
+        <p><strong>Significance:</strong> Potentially the largest AI IPO in history, with annualized revenue run rate reaching ~$47 billion in May 2026 (vs. ~$10 billion previously). Represents AI industry's maturation into trillion-dollar sector.</p>
+        <p><a href="#">Source: SEC Filings</a></p>
+      </article>
+      
+      <article class="case-card">
+        <h3>Revenue Growth Trajectory</h3>
+        <p><strong>Metric:</strong> 370% year-over-year growth</p>
+        <p><strong>Context:</strong> Anthropic's revenue acceleration from ~$10 billion to ~$47 billion annualized run rate demonstrates enterprise AI adoption velocity</p>
+        <p><strong>Market Impact:</strong> Sets new benchmarks for AI company valuations and growth expectations across the sector</p>
+        <p><a href="#">Source: Financial Reports</a></p>
+      </article>
+    </div>
+
+    <div class="callout"><strong>Market Signal:</strong> Anthropic's trillion-dollar valuation target establishes AI as a fundamental industry sector comparable to cloud computing or mobile platforms.</div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">06</div>
+    <h2>Events & Conferences</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">Google I/O 2026 emerged as the defining AI conference of May, introducing the "Agentic Gemini Era" theme and unveiling multiple breakthrough products. The event positioned Google as the leader in practical AI agent deployment.</p>
+    
+    <div class="topic-grid">
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Google I/O 2026</h3><span class="tag">Flagship Event</span></div>
+        <div class="topic-card-body">
+          <p><strong>Theme:</strong> "Welcome to the Agentic Gemini Era" - positioning AI agents as the next computing paradigm</p>
+          <ul>
+            <li>Gemini 3.5 Flash with autonomous coding capabilities</li>
+            <li>Gemini Spark personal AI agent for consumer deployment</li>
+            <li>Gemini Omni enhanced multimodal processing</li>
+            <li>Google Antigravity dynamic layout generation system</li>
+          </ul>
+        </div>
+      </article>
+      
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Industry Impact</h3><span class="tag">Strategic</span></div>
+        <div class="topic-card-body">
+          <p><strong>Market Positioning:</strong> Google's comprehensive agent strategy challenges OpenAI's market leadership</p>
+          <ul>
+            <li>Developer-focused tools for enterprise adoption</li>
+            <li>Consumer AI agent deployment at scale</li>
+            <li>Integration across Google's ecosystem</li>
+            <li>Competitive pressure on rival AI platforms</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">07</div>
+    <h2>Cross-Category Insights</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">May 2026 revealed three critical patterns across all AI development categories: the shift toward agentic capabilities, enterprise-grade reliability focus, and unprecedented market valuations validating AI's strategic importance.</p>
+    
+    <div class="topic-grid">
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Agentic Transformation</h3><span class="tag">Paradigm Shift</span></div>
+        <div class="topic-card-body">
+          <p><strong>Pattern:</strong> Every major release emphasized autonomous agent capabilities over raw model performance</p>
+          <ul>
+            <li>Claude's Dynamic Workflows for swarm coordination</li>
+            <li>Gemini's agentic coding and personal assistant features</li>
+            <li>Simplified frameworks enabling rapid agent deployment</li>
+          </ul>
+        </div>
+      </article>
+      
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Enterprise Readiness</h3><span class="tag">Market Maturation</span></div>
+        <div class="topic-card-body">
+          <p><strong>Focus:</strong> Reliability, honesty, and production deployment became primary differentiators</p>
+          <ul>
+            <li>Enhanced safety and alignment features</li>
+            <li>Developer-friendly deployment frameworks</li>
+            <li>Enterprise-grade performance guarantees</li>
+          </ul>
+        </div>
+      </article>
+      
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Valuation Revolution</h3><span class="tag">Financial</span></div>
+        <div class="topic-card-body">
+          <p><strong>Milestone:</strong> AI companies achieved trillion-dollar valuations, validating sector importance</p>
+          <ul>
+            <li>Anthropic's $965B pre-IPO valuation</li>
+            <li>Revenue growth rates exceeding 300% annually</li>
+            <li>Market recognition of AI as fundamental infrastructure</li>
+          </ul>
+        </div>
+      </article>
+      
+      <article class="topic-card">
+        <div class="topic-card-head"><h3>Research Convergence</h3><span class="tag">Technical</span></div>
+        <div class="topic-card-body">
+          <p><strong>Direction:</strong> Academic focus shifted toward practical deployment challenges and scaling limitations</p>
+          <ul>
+            <li>Post-transformer architecture exploration</li>
+            <li>Distributed training optimization</li>
+            <li>Edge computing integration strategies</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="slide-num">08</div>
+    <h2>Forward Outlook</h2>
+  </div>
+  <div class="slide-body">
+    <p class="slide-intro">May 2026's developments set the stage for accelerated AI adoption through 2027, with agentic capabilities becoming standard and trillion-dollar valuations attracting massive capital investment. The industry transitions from experimental to mission-critical infrastructure.</p>
+    
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <div class="roadmap-num">1</div>
+        <div class="roadmap-content">
+          <h3>Agent Ecosystem Expansion</h3>
+          <p>Simplified frameworks like Smolagents will democratize AI agent deployment, leading to widespread enterprise adoption by Q3 2026. Expect thousands of specialized agents across industries.</p>
+        </div>
+      </div>
+      
+      <div class="roadmap-item">
+        <div class="roadmap-num">2</div>
+        <div class="roadmap-content">
+          <h3>IPO Market Validation</h3>
+          <p>Anthropic's trillion-dollar IPO will trigger a wave of AI company public offerings, establishing AI as a fundamental sector alongside cloud computing and mobile platforms.</p>
+        </div>
+      </div>
+      
+      <div class="roadmap-item">
+        <div class="roadmap-num">3</div>
+        <div class="roadmap-content">
+          <h3>Architecture Innovation</h3>
+          <p>Research into post-transformer models will accelerate, driven by scaling limitations. Expect breakthrough architectures enabling more efficient training and deployment by 2027.</p>
+        </div>
+      </div>
+      
+      <div class="roadmap-item">
+        <div class="roadmap-num">4</div>
+        <div class="roadmap-content">
+          <h3>Enterprise Integration</h3>
+          <p>Google's agentic Gemini strategy will pressure competitors to deliver enterprise-ready AI solutions, accelerating corporate AI adoption timelines across all sectors.</p>
+        </div>
+      </div>
+      
+      <div class="roadmap-item">
+        <div class="roadmap-num">5</div>
+        <div class="roadmap-content">
+          <h3>Regulatory Response</h3>
+          <p>Trillion-dollar AI valuations will attract increased regulatory attention, potentially leading to new frameworks for AI company oversight and market competition rules.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout"><strong>Strategic Imperative:</strong> Organizations must begin AI agent integration planning immediately, as May 2026's developments indicate agentic capabilities will become competitive necessities, not optional enhancements.</div>
+  </div>
+</section>
+    <footer class="footer">AI Research Agent · Designed for screen viewing and print/PDF export</footer>
+  </div>
+</body>
+</html>

@@ -1,25 +1,22 @@
 """
 Deep Research Agent Module.
 
-Uses LangChain's Agent framework for iterative, multi-step reasoning
+Uses LangChain's `create_agent` for iterative, multi-step reasoning
 to research AI topics with self-correction and cross-category analysis.
 """
 
 import os
 import json
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain_core.agents import AgentFinish
-from langchain_core.exceptions import ToolException
+from langchain.agents import create_agent
 from langchain_core.language_models import BaseChatModel
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.tools import BaseTool
+from langchain_core.tools import StructuredTool
 
-from src.tavily import search as tavily_search
+from src.serper import search as serper_search
 from src.utils import generate_queries
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -31,8 +28,8 @@ RESEARCH_DIR = os.path.join(ROOT, "data", "research_results")
 # =============================================================================
 
 
-class TavilySearchInput(BaseModel):
-    """Input schema for Tavily search tool."""
+class SerperSearchInput(BaseModel):
+    """Input schema for Serper search tool."""
     query: str = Field(
         description="The search query for researching AI news and research topics."
     )
@@ -79,30 +76,21 @@ class QueryCategoriesInput(BaseModel):
 # =============================================================================
 
 
-def tavily_search_tool(
+def serper_search_tool(
     query: str,
     max_results: int = 10,
     search_depth: str = "advanced",
     topic: str = "ai",
 ) -> str:
     """
-    Search for AI news, research papers, model releases, tools, and events.
-    
+    Search Google for AI news, research papers, model releases, tools, and events.
+
     Use this tool to find current information about AI topics. Be specific in your
     queries to get the most relevant results. For comprehensive research, try multiple
     search queries with different angles on the same topic.
-    
-    Args:
-        query: Specific search query about AI topics
-        max_results: Number of results to return (10 recommended for research)
-        search_depth: 'basic' for quick results, 'advanced' for comprehensive analysis
-        topic: AI-related topic category
-    
-    Returns:
-        JSON string containing search results with titles, URLs, snippets, and scores
     """
     try:
-        response = tavily_search(
+        response = serper_search(
             query=query,
             max_results=max_results,
             search_depth=search_depth,
@@ -247,28 +235,66 @@ def generate_research_queries_tool(start_date: str, end_date: str) -> str:
 # =============================================================================
 
 
-def get_research_tools() -> List[BaseTool]:
+def get_research_tools() -> list:
     """Get all tools available to the deep research agent."""
     return [
-        BaseTool(
-            name="tavily_search",
-            description="Search for AI news and research. Use for specific queries about models, papers, tools, announcements, and events.",
-            args_schema=TavilySearchInput,
-            func=tavily_search_tool,
+        StructuredTool.from_function(
+            func=serper_search_tool,
+            name="serper_search",
+            description="Search Google for AI news and research. Use for specific queries about models, papers, tools, announcements, and events.",
+            args_schema=SerperSearchInput,
         ),
-        BaseTool(
+        StructuredTool.from_function(
+            func=save_findings_tool,
             name="save_findings",
             description="Save important research findings to markdown files for later synthesis.",
             args_schema=SaveFindingsInput,
-            func=save_findings_tool,
         ),
-        BaseTool(
+        StructuredTool.from_function(
+            func=generate_research_queries_tool,
             name="generate_queries",
             description="Generate structured search queries for AI research categories.",
             args_schema=QueryCategoriesInput,
-            func=generate_research_queries_tool,
         ),
     ]
+
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+
+
+def get_default_llm(temperature: float = 0.2) -> BaseChatModel:
+    """Return the default chat model, preferring Anthropic when configured."""
+    provider = os.getenv("LLM_PROVIDER", "").lower()
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+
+    use_anthropic = provider == "anthropic" or (
+        provider != "openai" and bool(anthropic_key)
+    )
+
+    if use_anthropic:
+        if not anthropic_key:
+            raise ValueError("ANTHROPIC_API_KEY is required when LLM_PROVIDER=anthropic")
+        from langchain_anthropic import ChatAnthropic
+
+        return ChatAnthropic(
+            model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
+            temperature=temperature,
+        )
+
+    if openai_key:
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+            temperature=temperature,
+        )
+
+    raise ValueError(
+        "No LLM API key found. Set ANTHROPIC_API_KEY (recommended) or OPENAI_API_KEY in .env"
+    )
 
 
 # =============================================================================
@@ -276,34 +302,29 @@ def get_research_tools() -> List[BaseTool]:
 # =============================================================================
 
 
-def create_deep_research_agent(llm: Optional[BaseChatModel] = None) -> AgentExecutor:
+def create_deep_research_agent(llm: Optional[BaseChatModel] = None):
     """
     Create a deep research agent for comprehensive AI topic investigation.
-    
+
     The agent uses iterative reasoning to:
     1. Generate comprehensive search queries
     2. Execute searches and analyze results
     3. Explore unexpected findings with follow-up searches
     4. Save structured findings for presentation generation
-    
+
     Args:
-        llm: Optional chat model. If not provided, uses OPENAI_API_KEY with gpt-4.
-    
+        llm: Optional chat model. If not provided, uses Anthropic Sonnet when
+             ANTHROPIC_API_KEY is set, otherwise OpenAI.
+
     Returns:
-        Configured AgentExecutor ready for research tasks.
+        Configured research agent ready for research tasks.
     """
-    from langchain_openai import ChatOpenAI
-    
     if llm is None:
-        llm = ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-4"),
-            temperature=0.2,
-        )
-    
+        llm = get_default_llm(temperature=0.2)
+
     tools = get_research_tools()
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an expert AI Research Analyst with deep knowledge of:
+
+    system_prompt = """You are an expert AI Research Analyst with deep knowledge of:
 - AI/ML model releases (GPT, Claude, Gemini, Llama, Mistral, etc.)
 - AI tools and frameworks (LangChain, AutoGPT, Hugging Face, etc.)
 - Research papers and academic publications
@@ -326,21 +347,13 @@ When you find important findings:
 - Consider cross-category implications
 - Save findings with enough detail for later synthesis
 
-End your research session by saving all significant findings to files."""),
-        ("human", "{input}"),
-        ("assistant", "{agent_scratchpad}"),
-    ])
-    
-    agent = create_react_agent(llm, tools, prompt)
-    
-    return AgentExecutor.from_agent_and_tools(
-        agent=agent,
+End your research session by saving all significant findings to files."""
+
+    return create_agent(
+        model=llm,
         tools=tools,
-        verbose=True,
-        max_iterations=15,
-        max_execution_time=300,  # 5 minute timeout
-        early_stopping_method="generate",
-        handle_parsing_errors=True,
+        system_prompt=system_prompt,
+        name="deep-research-agent",
     )
 
 
@@ -387,29 +400,40 @@ For each category:
 Return a summary of all significant findings and confirm which files were saved."""
 
     try:
-        result = agent.invoke({"input": research_task})
-        
+        result = agent.invoke(
+            {"messages": [("human", research_task)]},
+            config={"recursion_limit": 40},
+        )
+
+        # Extract final AI message content
+        messages = result.get("messages", [])
+        raw_output = messages[-1].content if messages else ""
+
         # Collect saved files
         output_files = []
-        for fname in os.listdir(RESEARCH_DIR):
-            if fname.endswith(".md"):
-                output_files.append(os.path.relpath(
-                    os.path.join(RESEARCH_DIR, fname), 
-                    ROOT
-                ))
-        
+        if os.path.isdir(RESEARCH_DIR):
+            for fname in os.listdir(RESEARCH_DIR):
+                if fname.endswith(".md"):
+                    output_files.append(os.path.relpath(
+                        os.path.join(RESEARCH_DIR, fname),
+                        ROOT
+                    ))
+
         return {
             "status": "completed",
             "research_task": research_task,
             "output_files": output_files,
-            "raw_output": result.get("output", ""),
+            "files_written": output_files,
+            "raw_output": raw_output,
         }
-        
+
     except Exception as e:
         return {
             "status": "error",
             "error": str(e),
             "research_task": research_task,
+            "output_files": [],
+            "files_written": [],
         }
 
 
@@ -418,52 +442,31 @@ Return a summary of all significant findings and confirm which files were saved.
 # =============================================================================
 
 
-def create_synthesis_agent(llm: Optional[BaseChatModel] = None) -> AgentExecutor:
+def create_synthesis_agent(llm: Optional[BaseChatModel] = None):
     """
     Create a synthesis agent for generating presentations from research data.
-    
+
     This agent analyzes research findings and creates compelling presentations
     that highlight key insights, trends, and significance.
     """
-    from langchain_openai import ChatOpenAI
-    
     if llm is None:
-        llm = ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-4"),
-            temperature=0.3,
-        )
-    
-    tools = get_research_tools()
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an expert presentation designer specializing in AI research synthesis.
+        llm = get_default_llm(temperature=0.3)
 
-Your task is to analyze research findings and create compelling presentations that:
-1. Highlight the most significant discoveries
+    system_prompt = """You are an expert presentation designer and HTML author specializing in AI research synthesis.
+
+Your task is to produce polished, eye-catching HTML slide decks that:
+1. Highlight the most significant discoveries with specific evidence
 2. Identify patterns and trends across categories
-3. Connect findings to broader AI landscape implications
-4. Present information in an engaging, narrative format
-5. Use data visualizations where appropriate (tables, timelines)
+3. Use the exact CSS class structure provided in each task (cover, slide, stat-grid, highlight-grid, case-grid, topic-grid, tables, roadmap, callout)
+4. Assign the correct layout component to each section — never dump plain paragraphs
+5. Include source links, dates, and analytical callouts on every slide
 
-Be critical - not all findings are equally important. Focus on what matters most.
+Be critical — not all findings are equally important. Focus on what matters most.
+Output raw HTML slide sections only (no markdown, no full document wrapper, no code fences)."""
 
-When generating presentations:
-- Start with executive summary / key highlights
-- Organize by category but look for cross-category themes
-- Include specific examples and evidence
-- End with implications and forward-looking insights
-
-Use markdown formatting for the presentation output."""),
-        ("human", "{input}"),
-        ("assistant", "{agent_scratchpad}"),
-    ])
-    
-    agent = create_react_agent(llm, tools, prompt)
-    
-    return AgentExecutor.from_agent_and_tools(
-        agent=agent,
-        tools=tools,
-        verbose=True,
-        max_iterations=5,
-        max_execution_time=120,
+    return create_agent(
+        model=llm,
+        tools=[],
+        system_prompt=system_prompt,
+        name="synthesis-agent",
     )
