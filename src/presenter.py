@@ -5,7 +5,6 @@ Synthesizes research results into attractive HTML presentations.
 This module supports:
 - Template-based markdown generation (generate_presentation) — fallback only
 - Deep agent-powered HTML synthesis (generate_html_presentation_with_agent)
-- Markdown-to-HTML conversion (generate_html_presentation) — legacy utility
 """
 
 import html as html_module
@@ -543,28 +542,6 @@ Use {generated_at} in the cover chip."""
             "output_file": output_file,
             "categories_analyzed": list(research.keys()),
         }
-
-
-def generate_presentation_with_agent(
-    research_dir: str,
-    start_date: str,
-    end_date: str,
-    output_file: Optional[str] = None,
-    llm: Optional[Any] = None,
-) -> Dict[str, Any]:
-    """Deprecated alias — use generate_html_presentation_with_agent instead."""
-    if output_file and output_file.endswith(".md"):
-        html_file = output_file.replace(".md", ".html")
-    elif output_file:
-        html_file = output_file
-    else:
-        html_file = None
-
-    result = generate_html_presentation_with_agent(
-        research_dir, start_date, end_date, output_file=html_file, llm=llm
-    )
-    result["presentation"] = result.get("html", "")
-    return result
 
 
 def _build_research_summary(research: Dict[str, str], start_date: str, end_date: str) -> str:
@@ -1490,32 +1467,3 @@ def _build_slide_deck(markdown_content: str, generated_at: str) -> str:
     return cover + "".join(slides)
 
 
-def generate_html_presentation(
-    markdown_file: str,
-    output_file: Optional[str] = None,
-    title: Optional[str] = None,
-) -> str:
-    """
-    Convert a markdown presentation into a styled, print-friendly HTML slide deck.
-
-    Args:
-        markdown_file: Path to the source markdown presentation
-        output_file: Optional path for the generated HTML file
-        title: Optional document title; inferred from the first H1 if omitted
-
-    Returns:
-        The generated HTML as a string
-    """
-    with open(markdown_file, "r", encoding="utf-8") as f:
-        markdown_content = f.read()
-
-    doc_title = title or _extract_title(markdown_content)
-    deck_html = _build_slide_deck(markdown_content, datetime.now().strftime("%B %d, %Y"))
-    html = _wrap_html_document(doc_title, deck_html)
-
-    if output_file:
-        os.makedirs(os.path.dirname(output_file) or ".", exist_ok=True)
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(html)
-
-    return html

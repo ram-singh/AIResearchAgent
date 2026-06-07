@@ -105,7 +105,6 @@ def _configure_ssl(verify_ssl: bool) -> None:
 def _patch_langchain_httpx_clients() -> None:
     import functools
 
-    import httpx
     from langchain_anthropic import _client_utils as anthropic_utils
     from langchain_anthropic import chat_models as anthropic_chat_models
 
